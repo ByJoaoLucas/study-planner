@@ -1,23 +1,32 @@
 import { useState } from 'react'
-import { useTasks } from '../contexts/TaskContext'
+//import { useTasks } from '../contexts/TaskContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { EmptyState, ThemeToggle } from '../components/UI'
 import { AddTaskModal, EditTaskModal } from '../components/Modal'
 import { TaskSection } from '../components/Task'
+import { useDispatch, useSelector } from 'react-redux'
+import { editTask, deleteTask, addTask, toggleTaskComplete, selectTasks, selectPendingTasks, selectCompletedTasks } from '../store/slices/taskSlice'
 
 function StudyPlannerPage() {
+  const dispatch = useDispatch()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [taskToEdit, setTaskToEdit] = useState(null)
-  const {
-    tasks,
-    addTask,
-    toggleTaskComplete,
-    editTask,
-    deleteTask,
-    getPendingTasks,
-    getCompletedTasks
-  } = useTasks()
+
+  //Redux
+  const tasks = useSelector(selectTasks);
+  const pendingTasks = useSelector(selectPendingTasks);
+  const completedTasks = useSelector(selectCompletedTasks);
+
+  //Context API
+  // const {
+  //   addTask,
+  //   toggleTaskComplete,
+  //   editTask,
+  //   deleteTask,
+  //   getPendingTasks,
+  //   getCompletedTasks
+  // } = useTasks()
 
   const handleAddTask = () => {
     setIsModalOpen(true)
@@ -28,11 +37,11 @@ function StudyPlannerPage() {
   }
 
   const handleAddNewTask = (newTask) => {
-    addTask(newTask)
+    dispatch(addTask(newTask))
   }
 
   const handleToggleComplete = (taskId) => {
-    toggleTaskComplete(taskId)
+    dispatch(toggleTaskComplete(taskId))
   }
 
   const handleEditTask = (taskId) => {
@@ -47,15 +56,13 @@ function StudyPlannerPage() {
   }
 
   const handleSaveEditTask = (taskId, updatedTask) => {
-    editTask(taskId, updatedTask)
+    dispatch(editTask({ taskId, updatedTask }))
   }
 
   const handleDeleteTask = (taskId) => {
-    deleteTask(taskId)
+    dispatch(deleteTask(taskId))
   }
 
-  const pendingTasks = getPendingTasks()
-  const completedTasks = getCompletedTasks()
   const theme = useTheme()
 
   return (

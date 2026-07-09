@@ -1,14 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  tasks: [
-    {
-       id: 1,
-       title: 'Task 1',
-       description: 'Description 1',
-       completed: false, 
-    }
-  ],
+  tasks: []
 };
 
 const taskSlice = createSlice({
@@ -23,7 +16,7 @@ const taskSlice = createSlice({
         };
         state.tasks.push(taskWithId);
     },
-    toggleTaskCompletion: (state, action) => {
+    toggleTaskComplete: (state, action) => {
         const task = state.tasks.find((task) => task.id === action.payload);
         if(task) task.completed = !task.completed;
     },
@@ -31,14 +24,14 @@ const taskSlice = createSlice({
         const { taskId, updatedTask } = action.payload;
         const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
         if(taskIndex !== -1) state.tasks[taskIndex] = { ...state.tasks[taskIndex], ...updatedTask };
-    },
+    }, 
     deleteTask: (state, action) => {
         state.tasks = state.tasks.filter((task) => task.id !== action.payload);    
     },
    },
 });
 
-export const { addTask, toggleTaskCompletion, editTask, deleteTask } = taskSlice.actions;
+export const { addTask, toggleTaskComplete, editTask, deleteTask } = taskSlice.actions;
 
 export const selectTasks = (state) => state.tasks.tasks;
 export const selectPendingTasks = (state) => state.tasks.tasks.filter((task) => !task.completed);
