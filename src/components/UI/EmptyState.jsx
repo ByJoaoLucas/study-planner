@@ -1,8 +1,9 @@
 import AddTaskButton from './AddTaskButton'
-import { useTheme } from '../../contexts/ThemeContext'
+import { selectTheme } from '../../store/slices/themeSlice'
+import { useSelector } from 'react-redux'
 
 function EmptyState({ onAddTask }) {
-  const theme = useTheme()
+  const theme = useSelector(selectTheme)
   return (
     <div className="text-center py-8">
       <div className="mb-6">

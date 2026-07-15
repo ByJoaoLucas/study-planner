@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 //import { useTasks } from '../contexts/TaskContext'
-import { useTheme } from '../contexts/ThemeContext'
 import { EmptyState, ThemeToggle } from '../components/UI'
 import { AddTaskModal, EditTaskModal } from '../components/Modal'
 import { TaskSection } from '../components/Task'
 import { useDispatch, useSelector } from 'react-redux'
+import { selectTheme } from '../store/slices/themeSlice'
 import { editTask, deleteTask, addTask, toggleTaskComplete, selectTasks, selectPendingTasks, selectCompletedTasks } from '../store/slices/taskSlice'
+import { selectAnalytics, updateAnalytics } from '../store/slices/analyticSlice'
 
 function StudyPlannerPage() {
   const dispatch = useDispatch()
@@ -17,6 +18,8 @@ function StudyPlannerPage() {
   const tasks = useSelector(selectTasks);
   const pendingTasks = useSelector(selectPendingTasks);
   const completedTasks = useSelector(selectCompletedTasks);
+  const theme = useSelector(selectTheme);
+  const analytics = useSelector(selectAnalytics);
 
   //Context API
   // const {
@@ -27,6 +30,10 @@ function StudyPlannerPage() {
   //   getPendingTasks,
   //   getCompletedTasks
   // } = useTasks()
+
+  useEffect(() => {
+    dispatch(updateAnalytics(tasks));
+  }, [tasks, dispatch]);
 
   const handleAddTask = () => {
     setIsModalOpen(true)
@@ -63,8 +70,6 @@ function StudyPlannerPage() {
     dispatch(deleteTask(taskId))
   }
 
-  const theme = useTheme()
-
   return (
     <div 
       className="min-h-screen flex items-center justify-center p-4"
@@ -92,7 +97,7 @@ function StudyPlannerPage() {
           ) : (
             <div>
               <TaskSection
-                title="Para estudar"
+                title={`Para estudar(${analytics.pendingTasks})`}
                 tasks={pendingTasks}
                 borderColor="gray-600"
                 onToggleComplete={handleToggleComplete}
@@ -101,7 +106,7 @@ function StudyPlannerPage() {
               />
 
               <TaskSection
-                title="Concluído"
+                title={`Concluído(${analytics.completedTasks})`}
                 tasks={completedTasks}
                 borderColor="purple-header"
                 onToggleComplete={handleToggleComplete}
@@ -109,7 +114,20 @@ function StudyPlannerPage() {
                 onDelete={handleDeleteTask}
               />
 
-              <div className="flex justify-center mt-8">
+              <div className="mt-8">
+                <div className='flex justify-between items-center mb-4'>
+                  <div className={`text-sm ${theme.textSecondary}`}>
+                    <span>Total: {analytics.totalTasks}</span>
+                    <span className="ml-4">Concluído: {analytics.completionPercentage}%</span>
+                  </div>
+
+                  {analytics.overdueTasks > 0 && (
+                    <div className='text-sm text-red-500 font-semibold'>
+                      <span>Atrasado: {analytics.overdueTasks}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-center">
                 <button
                   onClick={handleAddTask}
                   className="w-12 h-12 bg-purple-header hover:bg-purple-dark transition-colors rounded-full flex items-center justify-center"
@@ -117,6 +135,7 @@ function StudyPlannerPage() {
                 >
                   <span className="material-icons text-white text-xl">add</span>
                 </button>
+                </div>
               </div>
             </div>
           )}
