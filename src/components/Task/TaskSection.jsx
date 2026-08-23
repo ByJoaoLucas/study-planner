@@ -1,8 +1,9 @@
 import { TaskItem } from '.'
-import { useTheme } from '../../contexts/ThemeContext'
+import { selectTheme } from '../../store/slices/themeSlice'
+import { useSelector } from 'react-redux'
 
 function TaskSection({ title, tasks, borderColor = 'gray-600', onToggleComplete, onEdit, onDelete }) {
-  const theme = useTheme()
+  const theme = useSelector(selectTheme)
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">

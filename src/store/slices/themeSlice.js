@@ -1,15 +1,27 @@
-import { createContext, useContext, useState } from 'react'
+import { createSlice } from '@reduxjs/toolkit';
 
-const ThemeContext = createContext()
+const initialState = {
+  theme: 'dark',
+};
 
-export function ThemeProvider({ children }) {
-  const [isDarkTheme, setIsDarkTheme] = useState(true)
+const themeSlice = createSlice({
+    name: 'theme',
+    initialState,
+    reducers: {
+        toggleTheme: (state) => {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        },
+        setTheme: (state, action) => {
+            state.theme = action.payload;
+        }
+    }
+});
 
-  const toggleTheme = () => {
-    setIsDarkTheme(!isDarkTheme)
-  }
+export const { toggleTheme, setTheme } = themeSlice.actions;
 
-  const theme = {
+export const selectTheme = (state) => {
+    const isDarkTheme = state.theme.theme === 'dark';
+    return {
     isDark: isDarkTheme,
     background: isDarkTheme 
       ? "url('/src/assets/bg-dark.png')" 
@@ -23,24 +35,7 @@ export function ThemeProvider({ children }) {
     inputBorder: isDarkTheme ? 'border-gray-600' : 'border-gray-400',
     dividerColor: isDarkTheme ? 'border-gray-600' : 'border-gray-300',
     dividerPurple: isDarkTheme ? 'border-purple-header' : 'border-purple-600'
-  }
+    }
+};
 
-  const value = {
-    ...theme,
-    toggleTheme
-  }
-
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
-
-export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
-  return context
-}
+export default themeSlice.reducer;
